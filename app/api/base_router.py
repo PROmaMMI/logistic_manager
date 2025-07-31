@@ -36,10 +36,8 @@ class CRUDRouter(Generic[ModelType, ReadSchemaType, CreateSchemaType, UpdateSche
 
         @self.router.get("/{item_id}", response_model=self.read_schema)
         async def get_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
-            item = await self.service.get(db, item_id)
-            if not item:
-                raise HTTPException(status_code=404, detail="Not found")
-            return item
+            return await self.service.get(db, item_id)
+
 
         @self.router.post("/", response_model=self.read_schema, status_code=status.HTTP_201_CREATED)
         async def create_item(item_in: self.create_schema, db: AsyncSession = Depends(get_db)):
@@ -48,13 +46,8 @@ class CRUDRouter(Generic[ModelType, ReadSchemaType, CreateSchemaType, UpdateSche
         @self.router.put("/{item_id}", response_model=self.read_schema)
         async def update_item(item_id: UUID, item_in: self.update_schema, db: AsyncSession = Depends(get_db)):
             item = await self.service.get(db, item_id)
-            if not item:
-                raise HTTPException(status_code=404, detail="Not found")
             return await self.service.update(db, item, item_in)
 
         @self.router.delete("/{item_id}", response_model=self.read_schema)
         async def delete_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
-            item = await self.service.delete(db, item_id)
-            if not item:
-                raise HTTPException(status_code=404, detail="Not found")
-            return item
+            return await self.service.delete(db, item_id)

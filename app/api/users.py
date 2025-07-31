@@ -24,10 +24,7 @@ class UserRouter(CRUDRouter[User, UserRead, UserCreate, UserUpdate, UserService]
 
         @self.router.get("/by-email/{email}", response_model=UserRead)
         async def get_user_by_email(email: str, db: AsyncSession = Depends(get_db)):
-            user = await self.service.get_by_email(db, email)
-            if not user:
-                raise HTTPException(status_code=404, detail="User not found")
-            return user
+            return await self.service.get_by_email(db, email)
 
         @self.router.get("/", response_model=List[UserRead])
         async def list_users(
